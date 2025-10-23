@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Estilo externo -->
+  <!-- Estilo -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -101,6 +101,9 @@
       <option>Não conheço</option>
     </select>
 
+    <label>Conhece iniciativas comunitárias?</label>
+    <input type="text" name="iniciativas" placeholder="Especifique se souber">
+
     <label>Maior dificuldade na separação:</label>
     <select name="dificuldade">
       <option>Falta de espaço</option>
@@ -122,32 +125,32 @@
   </footer>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwWTBoC9t3Z-gXirSMeghQOLXp6Il4O-gge6yA6R6Kn9kfsjWJxLMHouC8NBZAZCV5siA/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxw0LYer7tKEO6XkieecU36jKxV_Hp0GmDgIqc4hzweHp8drA-mn5zsvaVok5j4B2Crgg/exec";
 
     document.getElementById("form").addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const form = e.target;
       const formData = new FormData(form);
 
-      // Captura múltiplos checkboxes
+      // Adiciona múltiplos checkboxes
       const tiposSelecionados = [...form.querySelectorAll('input[name="tipos"]:checked')]
-        .map(cb => cb.value)
-        .join(", ");
-      formData.set("tipos", tiposSelecionados);
+        .map(cb => cb.value);
+      formData.delete("tipos");
+      tiposSelecionados.forEach(v => formData.append("tipos", v));
 
-      const data = Object.fromEntries(formData);
+      const msgEl = document.getElementById("msg");
+      msgEl.textContent = "Enviando...";
 
       try {
         await fetch(scriptURL, {
           method: "POST",
-          body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" }
+          body: formData
         });
-        document.getElementById("msg").textContent = "✅ Enviado com sucesso!";
+        msgEl.textContent = "✅ Enviado com sucesso!";
         form.reset();
-      } catch {
-        document.getElementById("msg").textContent = "❌ Erro ao enviar. Verifique a conexão.";
+      } catch (err) {
+        console.error("Erro no envio:", err);
+        msgEl.textContent = "❌ Falha ao enviar.";
       }
     });
   </script>

@@ -51,11 +51,10 @@ input, select, textarea {
   font-size: 1rem;
 }
 
-/* --- Grupo de checkboxes --- */
 .checkbox-group {
   margin-top: 10px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 10px 20px;
 }
 
@@ -70,12 +69,8 @@ input, select, textarea {
 .checkbox-group input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #006b3f; /* cor verde da marca */
+  accent-color: #006b3f;
   cursor: pointer;
-}
-
-.checkbox-group label {
-  font-weight: 400;
 }
 
 button {
@@ -109,17 +104,7 @@ footer {
   color: #444;
 }
 
-/* 🔹 Responsividade para celular */
 @media (max-width: 600px) {
-  h1 {
-    font-size: 1.4rem;
-  }
-
-  form {
-    padding: 15px;
-    margin: 10px;
-  }
-
   .checkbox-group {
     grid-template-columns: 1fr;
   }

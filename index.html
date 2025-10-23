@@ -168,7 +168,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Estilo externo -->
+  <!-- Estilo -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -259,6 +259,9 @@
       <option>Não conheço</option>
     </select>
 
+    <label>Conhece iniciativas comunitárias?</label>
+    <input type="text" name="iniciativas" placeholder="Especifique se souber">
+
     <label>Maior dificuldade na separação:</label>
     <select name="dificuldade">
       <option>Falta de espaço</option>
@@ -280,61 +283,35 @@
   </footer>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwnWP8N97lWrxcV5UfBdARCt8Akm9Q1Tz4KPRU_9HZkU3jXqDcgCY9Kio2nLOXj31LdXA/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxlgQL5I_Xe3GtP_x4nzqduP2Z8XhqPc7FUqIsDHTLT_44eYlMTypMJv8VIUia4KKA8aw/exec";
 
     document.getElementById("form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const form = e.target;
-
-      // montar FormData
       const formData = new FormData(form);
 
-      // transformar checkboxes em string (se houver)
+      // Adiciona múltiplos checkboxes
       const tiposSelecionados = [...form.querySelectorAll('input[name="tipos"]:checked')]
-        .map(cb => cb.value)
-        .join(", ");
-      formData.set("tipos", tiposSelecionados);
+        .map(cb => cb.value);
+      formData.delete("tipos");
+      tiposSelecionados.forEach(v => formData.append("tipos", v));
 
-      const data = Object.fromEntries(formData);
-
-      // mostrar loading
       const msgEl = document.getElementById("msg");
       msgEl.textContent = "Enviando...";
 
       try {
-        const resp = await fetch(scriptURL, {
+        await fetch(scriptURL, {
           method: "POST",
-          body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" }
+          body: formData
         });
-
-        const text = await resp.text(); // pega corpo como texto para debug
-        // tenta parsear JSON
-        let json;
-        try { json = JSON.parse(text); } catch(err) { json = null; }
-
-        if (!resp.ok) {
-          console.error("HTTP error:", resp.status, text);
-          msgEl.textContent = `Erro HTTP ${resp.status} — veja console.`;
-          return;
-        }
-
-        if (json && json.status === "success") {
-          msgEl.textContent = "✅ Enviado com sucesso!";
-          form.reset();
-        } else {
-          console.error("Resposta do servidor:", text);
-          const errMsg = (json && json.message) ? json.message : "Resposta inesperada do servidor";
-          msgEl.textContent = "❌ Erro: " + errMsg;
-        }
-
-      } catch (fetchErr) {
-        console.error("Falha no fetch:", fetchErr);
-        msgEl.textContent = "❌ Falha na conexão. Verifique a URL do script e permissões.";
+        msgEl.textContent = "✅ Enviado com sucesso!";
+        form.reset();
+      } catch (err) {
+        console.error("Erro no envio:", err);
+        msgEl.textContent = "❌ Falha ao enviar.";
       }
     });
   </script>
-
 
 </body>
 </html>
